@@ -37,6 +37,16 @@ form?.addEventListener('submit', async (event) => {
   }
 });
 
+function getSavedValue(key) {
+  try { return window.localStorage.getItem(key); } catch { return null; }
+}
+function setSavedValue(key, value) {
+  try { window.localStorage.setItem(key, value); return true; } catch { return false; }
+}
+function removeSavedValue(key) {
+  try { window.localStorage.removeItem(key); return true; } catch { return false; }
+}
+
 const paths = {
   ui: {
     title: 'Make a searchable mini library',
@@ -59,7 +69,7 @@ const paths = {
     steps: ['01 · Find a beginner issue', '02 · Reproduce the behavior', '03 · Share a focused fix']
   }
 };
-let selectedPath = localStorage.getItem('firesideSelectedPath') || 'ui';
+let selectedPath = getSavedValue('firesideSelectedPath') || 'ui';
 const pathTitle = document.querySelector('#path-title');
 const pathDescription = document.querySelector('#path-description');
 const pathSteps = document.querySelector('#path-steps');
@@ -80,7 +90,7 @@ function refreshPath() {
   if (pathDescription) pathDescription.textContent = info.description;
   if (pathSteps) pathSteps.innerHTML = info.steps.map((step) => `<span>${step}</span>`).join('');
   if (sprintFocus) sprintFocus.textContent = `Focus idea: ${info.title}`;
-  const saved = localStorage.getItem('firesideSavedPath') === path;
+  const saved = getSavedValue('firesideSavedPath') === path;
   if (savePathButton) {
     savePathButton.innerHTML = saved ? 'Idea saved <span>✓</span>' : 'Save this idea <span>＋</span>';
     savePathButton.setAttribute('aria-pressed', String(saved));
@@ -91,7 +101,7 @@ function refreshPath() {
 function choosePath(path) {
   if (!paths[path]) return;
   selectedPath = path;
-  localStorage.setItem('firesideSelectedPath', path);
+  setSavedValue('firesideSelectedPath', path);
   refreshPath();
 }
 
@@ -105,10 +115,13 @@ document.querySelectorAll('[data-choose-path]').forEach((card) => {
   });
 });
 savePathButton?.addEventListener('click', () => {
-  if (localStorage.getItem('firesideSavedPath') === selectedPath) {
-    localStorage.removeItem('firesideSavedPath');
+  if (getSavedValue('firesideSavedPath') === selectedPath) {
+    removeSavedValue('firesideSavedPath');
   } else {
-    localStorage.setItem('firesideSavedPath', selectedPath);
+    if (!setSavedValue('firesideSavedPath', selectedPath) && saveStatus) {
+      saveStatus.textContent = 'Browser storage is unavailable. Keep this idea open while you work.';
+      return;
+    }
   }
   refreshPath();
 });
