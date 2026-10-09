@@ -1,0 +1,9 @@
+{
+  "name": "fireside-fan-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A fan-made Fireship appreciation site with a persistent newsletter signup form.",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
+
