@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: fireside-fan-site
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+
