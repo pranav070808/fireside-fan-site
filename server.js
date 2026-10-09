@@ -60,7 +60,9 @@ const server = http.createServer(async (req, res) => {
     let content;
     try { content = await fs.readFile(target); }
     catch { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Page not found'); }
-    res.writeHead(200, { 'Content-Type': mime[path.extname(target)] || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'Cache-Control': path.extname(target) === '.html' ? 'no-cache' : 'public, max-age=3600' });
+    const extension = path.extname(target);
+    const cacheControl = ['.html', '.css', '.js'].includes(extension) ? 'no-cache' : 'public, max-age=3600';
+    res.writeHead(200, { 'Content-Type': mime[extension] || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'Cache-Control': cacheControl });
     return res.end(req.method === 'HEAD' ? undefined : content);
   } catch (error) {
     console.error(error);
